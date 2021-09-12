@@ -1,2 +1,2 @@
-# CPP-Project
-Project for KMITL C Programming course
+# 3D-Snake
+A project for KMITL C Programming course

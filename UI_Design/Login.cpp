@@ -1,4 +1,5 @@
-// If user select "user login"
+// If user select "Login into existing account"
+// Here, admin and user can use the same login page.
 
 #include <stdio.h>
 

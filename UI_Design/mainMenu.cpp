@@ -14,7 +14,7 @@ int main() {
     printf("=========================================================================================================\n");
     printf("                                         Welcome to Book Store!\n");
     printf("Please login to continue:\n");
-    printf("[1] User login\n");
-    printf("[2] Admin login\n");
+    printf("[1] Login into existing account\n");
+    printf("[2] Register new account\n");
     printf("\nChoice--> ");
 }

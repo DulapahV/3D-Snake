@@ -16,5 +16,6 @@ int main() {
     printf("Please login to continue:\n");
     printf("[1] Login into existing account\n");
     printf("[2] Register new account\n");
+    printf("[3] Exit\n");
     printf("\nChoice--> ");
 }

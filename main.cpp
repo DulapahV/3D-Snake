@@ -7,6 +7,7 @@ using namespace std;
 
 #define ID_LIMIT 10
 #define NAME_LIMIT 30
+FILE *booksDatabase = fopen("booksDatabase.txt","a");
 struct Book{
     char id[10];
     char name[30];
@@ -42,7 +43,7 @@ int delete_book();
 int set_stock();
 int add_stock();
 int book_id_checker(char* id);
-
+void update_books();
 int main(){
     display_front_page();
     return 0;
@@ -76,6 +77,9 @@ void display_front_page() {
         break;
     case 3:
         exit(0);
+    case 4: //for testing purpose
+        add_book();
+        break;
     default:
         printf("\nError: Wrong Choice\n\n");
         system("pause");
@@ -134,10 +138,15 @@ int get_choice(int minval, int maxval){// pass min,max to check if user input is
 
 int add_book(){
     struct Book new_book;
+    int i = 0,c=0;
     printf("[Add Book] Enter book info: \n");
     // while(1){
     printf("ID: ");
-    fgets(new_book.id,ID_LIMIT,stdin);
+    fflush(stdin);
+    while((c = getchar()) != EOF && c!= '\n'){
+        new_book.id[i++]=c;
+    }
+    new_book.id[i] = 0;
     // if(book_id_checker(new_book.id)!=-1)
     //     break;
     // else{
@@ -145,12 +154,24 @@ int add_book(){
     // }
     // }
     printf("Book name: ");
-    fgets(new_book.name,NAME_LIMIT,stdin);
+    fflush(stdin);
+    while((c=getchar())!= EOF && c!= '\n'){
+        new_book.name[i++]=c;
+    }
+    new_book.name[i] = 0;
+
     printf("Author name: ");
-    fgets(new_book.author,NAME_LIMIT,stdin);
+    fflush(stdin);
+    i = 0;
+    while((c=getchar())!= EOF && c!= '\n'){
+        new_book.author[i++]=c;
+    }
+    new_book.author[i] = 0;
+
     printf("Published Date(DD): ");
     fflush(stdin);
     scanf("%d",&new_book.pub_date[0]);
+    
     printf("Published Date(MM): ");
     fflush(stdin);
     scanf("%d",&new_book.pub_date[1]);
@@ -163,9 +184,40 @@ int add_book(){
     scanf("%d",&new_book.genre);
     printf("Initial Stock: ");
     scanf("%d",&new_book.stock);
-
     books.push_back(new_book);
+    printf("%c",new_book.name[0]);
+
+    //Storing this book to booksDatabase.txt
+    for (int i = 0; i < 10 && new_book.id[i] != 0; i++){
+        fprintf(booksDatabase,"%c",new_book.id[i]);
+    }
+    fprintf(booksDatabase,"\t");
+
+    for (int i = 0; i < NAME_LIMIT && new_book.name[i]!=0; i++){
+        
+        fprintf(booksDatabase,"%c",new_book.name[i]); 
+    }
+    fprintf(booksDatabase,"\t");
+
+    for (int i = 0; i < NAME_LIMIT && new_book.author[i]!=0; i++){
+        fprintf(booksDatabase,"%c",new_book.author[i]);
+    }
+    fprintf(booksDatabase,"\t");
+
+    for (int i = 0; i < 3; i++){
+        fprintf(booksDatabase,"%d",new_book.pub_date[i]);
+        fprintf(booksDatabase,"\t");
+    }
+    
+    fprintf(booksDatabase,"%f",new_book.price);
+    fprintf(booksDatabase,"\t");
+
+    fprintf(booksDatabase,"%d",new_book.genre);
+    fprintf(booksDatabase,"\t");
+
+    fprintf(booksDatabase,"%d\n",new_book.stock);
 }
+
 void clrscr(){
     system("cls");
 }

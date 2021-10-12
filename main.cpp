@@ -2,6 +2,7 @@
 #include <string.h>
 #include <vector>
 #include <stdlib.h>
+#include <iostream>
 
 
 using namespace std;
@@ -90,27 +91,21 @@ void display_login_pg() {
         system("pause");
         display_front_page();
     }
-    printf("> Please enter your credentials\n");
-
-    while(getchar() != '\n'); // Prevent the \n character that is left behind by previous scanf
+    cout << "> Please enter your credentials" << endl;
 
     // Get username
-    int charInput = 0, index = 0;
-    printf("Username: ");
-    while ((charInput = getchar()) != EOF && charInput != '\n')
-        tempUsername[index++] = charInput;
+    cout << "Username: ";
+    cin >> tempUsername;
     
     // Get password
-    index = 0;
-    printf("Password: ");
-    while ((charInput = getchar()) != EOF && charInput != '\n')
-        tempPassword[index++] = charInput;
+    cout << "Password: ";
+    cin >> tempPassword;
     
     // Check credential
     if (is_credential_valid(tempUsername, tempPassword))
-        printf("\nWelcome back %s!\n\n", tempUsername);
+        cout << "\nWelcome back, " << tempUsername << "!\n" << endl;
     else
-        printf("\nUsername or password is incorrect! Please try again.\n\n");
+        cout << "\nUsername or password is incorrect! Please try again.\n" << endl;
     system("pause");
     display_front_page();
 }
@@ -123,20 +118,16 @@ void display_register_pg() {
     // Open user database file
     FILE *userDatabase = fopen("userDatabase.txt", "a");
     if (userDatabase == NULL) {
-        printf("Error accessing user database!");
+        cout << "Error accessing user database!" << endl;
         system("pause");
         display_front_page();
     }
 
-    printf("> Please enter your credentials\n");
+    cout << "> Please enter your credentials" << endl;
     
-    while(getchar() != '\n'); // Prevent the \n character that is left behind by previous scanf
-
     // Get username
-    int charInput = 0, index = 0;
-    printf("Username: ");
-    while ((charInput = getchar()) != EOF && charInput != '\n')
-        tempUsername[index++] = charInput;
+    cout << "Username: ";
+    cin >> tempUsername;
     if (is_user_exist(tempUsername) != -1) { // Check if username already existed
         printf("\nUsername already exists! Please try again.\n\n");
         system("pause");
@@ -144,51 +135,46 @@ void display_register_pg() {
     }
 
     // Get password
-    index = 0;
-    printf("Password: ");
-    while ((charInput = getchar()) != EOF && charInput != '\n')
-        tempPassword[index++] = charInput;
+    cout << "Password: ";
+    cin >> tempPassword;
     
     // Get confirm password
-    index = 0;
-    printf("Confirm Password: ");
-    while ((charInput = getchar()) != EOF && charInput != '\n')
-        tempConfirmPassword[index++] = charInput;
+    cout << "Confirm Password: ";
+    cin >> tempConfirmPassword;
+    
     // Check whether password and confirm password matched or not
-    for (int i = 0; i < 20; i++) {
-        if (tempPassword[i] != tempConfirmPassword[i]) {
-            printf("\nPassword mismatch! Please try again.\n\n");
-            system("pause");
-            display_front_page();
-        }
+    if (strcmp(tempPassword, tempConfirmPassword) != 0) {
+        cout << "\nPassword mismatch! Please try again.\n" << endl;
+        system("pause");
+        display_front_page();
     }
 
     // Get year
-    printf("Birthdate (YYYY): ");
-    scanf("%d", &tempYear);
+    cout << "Birthdate (YYYY): ";
+    cin >> tempYear;
 
     // Get month
-    printf("Birthdate (MM): ");
-    scanf("%d", &tempMonth);
+    cout << "Birthdate (MM): ";
+    cin >> tempMonth;
     if (tempMonth <= 0 || tempMonth > 12) {
-        printf("\nInvalid month! Please try again.\n\n");
+        cout << "\nInvalid month! Please try again.\n" << endl;
         system("pause");
         display_front_page();
     }
 
     // Get date
-    printf("Birthdate (DD): ");
-    scanf("%d", &tempDay);
+    cout << "Birthdate (DD): ";
+    cin >> tempDay;
     if (tempDay > 0 && tempDay < 32) {
         // check whether it is leap year, entered month is February, and entered date is valid or not
         if (tempYear % 4 != 0 && tempMonth == 2 && tempDay > 28) {
-            printf("\nInvalid date! Please try again.\n\n");
+            cout << "\nInvalid date! Please try again.\n" << endl;
             system("pause");
             display_front_page();
         }
     }
     else {
-        printf("\nInvalid birthdate! Please try again.\n\n");
+        cout << "\nInvalid date! Please try again.\n" << endl;
         system("pause");
         display_front_page();
     }
@@ -207,7 +193,7 @@ void display_register_pg() {
     fprintf(userDatabase, "%d\n", tempYear);
     
     fclose(userDatabase);
-    printf("\nAccount Successfully Registered!\n\n");
+    cout << "\nAccount Successfully Registered!\n" << endl;
     system("pause");
     display_front_page();
 }
@@ -216,7 +202,7 @@ int is_user_exist(char *username) { // return -1 if user not found, else return 
     char usernameDB[20];
     FILE *userDatabase = fopen("userDatabase.txt", "r");
     if (userDatabase == NULL) {
-        printf("Error accessing user database!");
+        cout << "Error accessing user database!" << endl;
         system("pause");
         display_front_page();
     }
@@ -242,7 +228,7 @@ bool is_credential_valid(char *username, char *password) {
     char passwordDB[20];
     FILE *userDatabase = fopen("userDatabase.txt", "r");
     if (userDatabase == NULL) {
-        printf("Error accessing user database!");
+        cout << "Error accessing user database!" << endl;
         system("pause");
     }
     int userCheck = is_user_exist(username);

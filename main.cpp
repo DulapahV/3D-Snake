@@ -5,8 +5,12 @@
 
 using namespace std;
 
+#define ID_LIMIT 10
+#define NAME_LIMIT 30
+
+
 struct Book{
-    int id;
+    char id[10];
     char name[30];
     char author[30];
     int pub_date[3];// [dd,mm,yyyy]
@@ -29,11 +33,20 @@ struct user{
 void display_front_page();
 void display_login_pg();
 void display_register_pg();
+void display_admin_pg();
+
 void clrscr();
 int check_credential(char username, char password);
 int get_choice(int minval, int maxval);
 
+int add_book();
+int delete_book();
+int set_stock();
+int book_id_checker(char* id);
+int load_books();
+void write_books();
 int main(){
+    load_books();
     display_front_page();
     return 0;
 }
@@ -65,7 +78,11 @@ void display_front_page() {
         display_register_pg();
         break;
     case 3:
+        write_books();
         exit(0);
+    case 4: //for testing purpose
+        display_admin_pg();
+        break;
     default:
         printf("\nError: Wrong Choice\n\n");
         system("pause");
@@ -114,6 +131,36 @@ void display_register_pg() {
     display_front_page();
 }
 
+void display_admin_pg(){
+    clrscr();
+    printf("ADMIN\n");
+    printf("[1] Add Book\n");
+    printf("[2] Delete Book\n");
+    printf("[3] Manage Stock\n");
+    printf("[4] Exit\n");
+    printf("\nChoice--> ");
+    int choice = 0;
+    scanf("%d",&choice);
+    switch (choice){
+    case 1:
+        add_book();
+        break;
+    case 2:
+        // delete_book();
+        break;
+    case 3:
+        // set_stock();
+        break;
+    case 4: 
+        main();
+        break;
+    default:
+        printf("\nError: Wrong Choice\n\n");
+        system("pause");
+        main();
+    }
+}
+
 int check_credential(char username, char password) {
     return 0;
 }
@@ -122,6 +169,103 @@ int get_choice(int minval, int maxval){// pass min,max to check if user input is
     return 0;
 }
 
+int add_book(){ // get new book info and push into books vector
+    struct Book new_book;
+    int i = 0,c=0;
+    printf("[Add Book] Enter book info: \n");
+    while(1){
+    printf("ID: ");
+    fflush(stdin);
+    while((c = getchar()) != EOF && c!= '\n'){
+        new_book.id[i++]=c;
+    }
+    new_book.id[i] = 0;
+    char* nameptr = new_book.id;
+    if(book_id_checker(nameptr)!=-1)
+        break;
+    else{
+        printf("Id error(Redundant) please try again\n");
+        i=0;
+    }
+    }
+    printf("Book name: ");
+    fflush(stdin);
+    i = 0;
+    while((c=getchar())!= EOF && c!= '\n'){
+        new_book.name[i++]=c;
+    }
+    new_book.name[i] = 0;
+
+    printf("Author name: ");
+    fflush(stdin);
+    i = 0;
+    while((c=getchar())!= EOF && c!= '\n'){
+        new_book.author[i++]=c;
+    }
+    new_book.author[i] = 0;
+
+    printf("Published Date(DD): ");
+    fflush(stdin);
+    scanf("%d",&new_book.pub_date[0]);
+    printf("Published Date(MM): ");
+    fflush(stdin);
+    scanf("%d",&new_book.pub_date[1]);
+    printf("Published Date(YYYY): ");
+    fflush(stdin);
+    scanf("%d",&new_book.pub_date[2]);
+    printf("Price($): ");
+    scanf("%f",&new_book.price);
+    printf("Genre(0-10): ");
+    scanf("%d",&new_book.genre);
+    printf("Initial Stock: ");
+    scanf("%d",&new_book.stock);
+    new_book.number_sold = 0;
+    books.push_back(new_book);
+    clrscr();
+    printf("Book ID: %s successfully added\n",new_book.id);
+    display_admin_pg();
+}
+
+int book_id_checker(char* id){
+    for(int i=0;i<books.size();i++){
+        if(strcmp(id,books[i].id)==0){
+            return -1;
+        }
+    }
+    return 0;
+}
 void clrscr(){
     system("cls");
 }
+
+int load_books(){
+    FILE *booksDatabaseR = fopen("booksDatabase.txt","r");
+    char line[1024];
+    while(fgets(line,sizeof(line),booksDatabaseR)!= NULL){
+
+        struct Book new_book;
+        sscanf(line,"%s\t %[^\t] %[^\t] %d %d %d %f %d %d",
+        &new_book.id,&new_book.name,&new_book.author,&new_book.pub_date[0],
+        &new_book.pub_date[1],&new_book.pub_date[2],&new_book.price,
+        &new_book.genre,&new_book.stock);
+        new_book.name[29]='\0';
+        new_book.author[29]='\0';
+        books.push_back(new_book);
+        //printf("id:%s\nname:%s\nauthor:%s\npubd %d pubm %d puby %d\nprice: %f\ngenre:%d\nstock %d\n",new_book.id,new_book.name,new_book.author,new_book.pub_date[0],new_book.pub_date[1],new_book.pub_date[2],new_book.price,new_book.genre,new_book.stock);
+    }
+    fclose(booksDatabaseR);
+    return 0;
+}
+
+void write_books(){
+    FILE *booksDatabase = fopen("booksDatabase.txt","w+");
+    for (int i = 0 ; i < books.size(); i++){
+        struct Book new_book = books[i];
+        fprintf(booksDatabase,"%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\n",
+        new_book.id,new_book.name,new_book.author,new_book.pub_date[0],
+        new_book.pub_date[1],new_book.pub_date[2],new_book.price,
+        new_book.genre,new_book.stock);
+    }
+    fclose(booksDatabase);
+    }
+

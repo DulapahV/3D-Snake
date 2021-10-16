@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#define ADMIN_USERNAME "admin"
+#define ADMIN_PASSWORD "password"
 
 using namespace std;
 
@@ -20,17 +22,14 @@ struct Book{
 
 vector<Book> books;
 
-struct user{
-    char id[20];
-    char password[20];
+struct User{
     char username[20];
-    int birthday[3]; //dd,mm,yyyy
-    
-} user;
+    char password[20];
+};
 
 // Page
 void display_front_page();
-void display_login_pg();
+int display_login_pg(); // return 1 if privilege is user, else 2 for admin
 void display_register_pg();
 
 // Functions
@@ -80,7 +79,8 @@ void display_front_page() {
     }
 }
 
-void display_login_pg() {
+int display_login_pg() {
+    struct User user_info;
     clrscr();
     char tempUsername[20] = {' '}, tempPassword[20] = {' '};
 
@@ -102,12 +102,22 @@ void display_login_pg() {
     cin >> tempPassword;
     
     // Check credential
-    if (is_credential_valid(tempUsername, tempPassword))
+    if (is_credential_valid(tempUsername, tempPassword)) {
+        for (int i = 0; i < 20; i++) {
+            user_info.username[i] = tempUsername[i];
+            user_info.password[i] = tempPassword[i];
+        }
         cout << "\nWelcome back, " << tempUsername << "!\n" << endl;
+        if (tempUsername == ADMIN_USERNAME && tempPassword == ADMIN_PASSWORD)
+            return 2; // admin
+        else
+            return 1; // user
+    }
     else
         cout << "\nUsername or password is incorrect! Please try again.\n" << endl;
     system("pause");
     display_front_page();
+    return 0;
 }
 
 void display_register_pg() {

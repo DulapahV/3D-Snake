@@ -252,8 +252,52 @@ void display_admin_pg(){
     }
 }
 
-int check_credential(char username, char password) {
-    return 0;
+int is_user_exist(char *username) { // return -1 if user not found, else return line number of that user (starts from 1)
+    char usernameDB[20];
+    FILE *userDatabase = fopen("userDatabase.txt", "r");
+    if (userDatabase == NULL) {
+        cout << "Error accessing user database!" << endl;
+        system("pause");
+        display_front_page();
+    }
+    int lineNumber = 0;
+    getName:
+    lineNumber++;
+    fgets(usernameDB, 20, userDatabase);
+    if (strcmp(username, usernameDB) != 0)
+        if (!feof(userDatabase))
+            goto getName;
+        else {
+            fclose(userDatabase);
+            return -1;
+        }
+    else {
+        fclose(userDatabase);
+        lineNumber = (lineNumber / 3) + 1;
+        return lineNumber;
+    }
+}
+
+bool is_credential_valid(char *username, char *password) {
+    char passwordDB[20];
+    FILE *userDatabase = fopen("userDatabase.txt", "r");
+    if (userDatabase == NULL) {
+        cout << "Error accessing user database!" << endl;
+        system("pause");
+    }
+    int userCheck = is_user_exist(username);
+    if (userCheck != -1) {
+        getPassword:
+        for (int i = 0; i < (userCheck * 3) - 1; i++) // move fgets pointer to the next password in the next line
+            fgets(passwordDB, 20, userDatabase);
+        char *temp = passwordDB + 2; // Remove '\t' prefix
+        if (strcmp(password, temp) == 0) {
+            fclose(userDatabase);
+            return true;
+        }
+    }
+    fclose(userDatabase);
+    return false;
 }
 
 int get_choice(int minval, int maxval){// pass min,max to check if user input is in range of choice

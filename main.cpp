@@ -36,6 +36,8 @@ void display_front_page();
 int display_login_pg(); // return 1 if privilege is user, else 2 for admin
 void display_register_pg();
 void display_admin_pg();
+void display_costomer_page();
+void search_book();
 
 void clrscr();
 int is_user_exist(char *username); // return -1 if user not found, else return line number of that user (starts from 1)
@@ -403,4 +405,49 @@ void write_books(){
     }
     fclose(booksDatabase);
     }
+void display_costomer_page()
+{
+    int a;
+    printf("Select Menu\n1.Search book\n2.Buy Book\n3.Show book list\n4.Check Out");
+    scanf("%d",&a);
+
+    switch (a)
+    {
+        case 1 :
+            search_book();
+           
+            break;
+
+         case 2 :
+            //Buy book function
+
+            break;
+
+         case 3 :
+            //show book function
+
+            break;
+         case 4 :
+            //Check out function
+
+            break;
+
+    }
+}
+void search_book()
+{
+     int c;
+     char b[10];
+            printf("Enter Book ID:");
+            scanf("%s",b);
+            c = book_id_checker(b);
+            struct Book d = books[c];
+            printf("Id:%s\nName: %s\nauthor: %d\npub_date: %s\nprice: %f\ngenre: %d\nstock: %d\n,number_sold: %d",d.id,d.name,d.author,d.pub_date,d.price,d.genre,d.stock,d.number_sold);
+            
+            
+
+    
+            
+
+}   
 

@@ -38,6 +38,8 @@ void display_register_pg();
 void display_admin_pg();
 void display_costomer_page();
 void search_book();
+void buy_book();
+void check_out();
 
 void clrscr();
 int is_user_exist(char *username); // return -1 if user not found, else return line number of that user (starts from 1)
@@ -419,7 +421,7 @@ void display_costomer_page()
             break;
 
          case 2 :
-            //Buy book function
+            buy_book();
 
             break;
 
@@ -428,7 +430,7 @@ void display_costomer_page()
 
             break;
          case 4 :
-            //Check out function
+            check_out();
 
             break;
 
@@ -443,11 +445,21 @@ void search_book()
             c = book_id_checker(b);
             struct Book d = books[c];
             printf("Id:%s\nName: %s\nauthor: %d\npub_date: %s\nprice: %f\ngenre: %d\nstock: %d\n,number_sold: %d",d.id,d.name,d.author,d.pub_date,d.price,d.genre,d.stock,d.number_sold);
-            
-            
-
-    
-            
-
 }   
+void buy_book()
+{
+    int c;
+    char b[10];
+        printf("Enter Book ID:");
+        scanf("%s",b);
+        c = book_id_checker(b);
+        struct Book d = books[c];
+        d.stock -=1;
+        d.number_sold +=1;
+        printf("Complete buying book: %s",d.name);
+}
+void check_out()
+{
+    printf("Thank you");
+}
 

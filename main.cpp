@@ -454,8 +454,8 @@ void buy_book()
         scanf("%s",b);
         c = book_id_checker(b);
         struct Book d = books[c];
-        d.stock -=1;
-        d.number_sold +=1;
+        books[c].stock -=1;
+        books[c].number_sold +=1;
         printf("Complete buying book: %s",d.name);
 }
 void check_out()

@@ -122,10 +122,13 @@ int display_login_pg() {
             user_info.password[i] = tempPassword[i];
         }
         cout << "\nWelcome back, " << tempUsername << "!\n" << endl;
-        if (tempUsername == ADMIN_USERNAME && tempPassword == ADMIN_PASSWORD)
-            return 2; // admin
+        if ((strcmp(tempUsername, ADMIN_USERNAME) == 0) && (strcmp(tempPassword, ADMIN_PASSWORD) == 0)) {
+            system("pause");
+            display_admin_pg();
+        }
         else
-            return 1; // user
+            return 1; // user page
+        
     }
     else
         cout << "\nUsername or password is incorrect! Please try again.\n" << endl;
@@ -359,6 +362,7 @@ int add_book(){ // get new book info and push into books vector
     clrscr();
     printf("Book ID: %s successfully added\n",new_book.id);
     display_admin_pg();
+    return 0;
 }
 
 int book_id_checker(char* id){

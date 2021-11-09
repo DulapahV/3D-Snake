@@ -24,6 +24,8 @@ struct Book{
     int number_sold;
 };
 
+int Basketprice = 0;
+
 vector<Book> books;
 
 struct User{
@@ -40,7 +42,7 @@ void display_costomer_page();
 void search_book();
 void buy_book();
 void check_out();
-void showbook();
+void show_book();
 
 void clrscr();
 int is_user_exist(char *username); // return -1 if user not found, else return line number of that user (starts from 1)
@@ -442,7 +444,7 @@ void search_book()
      int c;
      char b[10];
             printf("Enter Book ID:");
-            scanf("%s",b);
+            scanf("%d",b);
             c = book_id_checker(b);
             struct Book d = books[c];
             printf("Id:%s\nName: %s\nauthor: %d\npub_date: %s\nprice: %f\ngenre: %d\nstock: %d\n,number_sold: %d",d.id,d.name,d.author,d.pub_date,d.price,d.genre,d.stock,d.number_sold);
@@ -459,18 +461,15 @@ void buy_book()
         struct Book d = books[c];
         books[c].stock -=1;
         books[c].number_sold +=1;
-        printf("Book cost: %s\rEnter your money:",d.price);
-        scanf("%f",&m);
-        z = m-d.price;
-        printf("Your money balance: %f",z);
-        printf("Complete buying book: %s",d.name);
+        printf("Book cost: %s\r",d.price);
+        Basketprice += d.price ;
 }
 void check_out()
-{
-    printf("Thank you");
+{   
+    printf("Total price: %f",Basketprice);
 }
 
-void showbook()
+void show_book()
 {
     int i;
     int a;

@@ -90,44 +90,44 @@ void display_front_page() {
 }
 
 void display_login_pg() {
-    clrscr();
-    int c = 0, i = 0;
-    printf("> Please enter your credentials\n");
-    printf("Username: ");
-    while(getchar() != '\n'); // Prevent the \n character that is left behind by previous scanf
-    while ((c = getchar()) != EOF && c != '\n')
-        user.username[i++] = c;
-    printf("Password: ");
-    i = 0;
-    while ((c = getchar()) != EOF && c != '\n')
-        user.password[i++] = c;
+    // clrscr();
+    // int c = 0, i = 0;
+    // printf("> Please enter your credentials\n");
+    // printf("Username: ");
+    // while(getchar() != '\n'); // Prevent the \n character that is left behind by previous scanf
+    // while ((c = getchar()) != EOF && c != '\n')
+    //     user.username[i++] = c;
+    // printf("Password: ");
+    // i = 0;
+    // while ((c = getchar()) != EOF && c != '\n')
+    //     user.password[i++] = c;
 }
 
 void display_register_pg() {
-    clrscr();
-    int c = 0, i = 0;
-    printf("> Please enter your credentials\n");
-    printf("Username: ");
-    while(getchar() != '\n'); // Prevent the \n character that is left behind by previous scanf
-    while ((c = getchar()) != EOF && c != '\n')
-        user.username[i++] = c;
-    printf("Password: ");
-    i = 0;
-    while ((c = getchar()) != EOF && c != '\n')
-        user.password[i++] = c;
-    printf("Confirm Password: ");
-    i = 0;
-    char confirmPassword[20] = {0};
-    while ((c = getchar()) != EOF && c != '\n')
-        confirmPassword[i++] = c;
-    for (int i = 0; i < 20; i++) {
-        if (user.password[i] != confirmPassword[i]) {
-            printf("\nPassword mismatch! Please try again.\n\n");
-            system("pause");
-            break;
-        }
-    }
-    display_front_page();
+    // clrscr();
+    // int c = 0, i = 0;
+    // printf("> Please enter your credentials\n");
+    // printf("Username: ");
+    // while(getchar() != '\n'); // Prevent the \n character that is left behind by previous scanf
+    // while ((c = getchar()) != EOF && c != '\n')
+    //     user.username[i++] = c;
+    // printf("Password: ");
+    // i = 0;
+    // while ((c = getchar()) != EOF && c != '\n')
+    //     user.password[i++] = c;
+    // printf("Confirm Password: ");
+    // i = 0;
+    // char confirmPassword[20] = {0};
+    // while ((c = getchar()) != EOF && c != '\n')
+    //     confirmPassword[i++] = c;
+    // for (int i = 0; i < 20; i++) {
+    //     if (user.password[i] != confirmPassword[i]) {
+    //         printf("\nPassword mismatch! Please try again.\n\n");
+    //         system("pause");
+    //         break;
+    //     }
+    // }
+    // display_front_page();
 }
 
 void display_admin_pg(){

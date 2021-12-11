@@ -324,6 +324,7 @@ void display_customer_pg()
 
 void show_book() {
     clrscr();
+    printf("> Show Book\n");
     FILE *userDatabase = fopen("booksDatabase.txt", "r");
     if (userDatabase == NULL) {
         cout << "Error accessing user database!" << endl;
@@ -371,15 +372,16 @@ readEntry:
 
 void buy_book() {
     clrscr();
+    printf("> Buy Book\n");
     printf("Enter book ID that you want to buy: ");
     char tmp_id[11];
     cin >> tmp_id;
     book_finder(tmp_id);
     int index = book_finder(tmp_id);
     if (index == -1){
-        printf("Not found");
+        printf("Book not found!\n\n");
         system("pause");
-        display_admin_pg();
+        display_customer_pg();
     }
     if (books[index].stock > 0) {
         printf("\nBook added to cart: %s\n\n",books[index].name);
@@ -394,6 +396,7 @@ void buy_book() {
 void checkout() {
     clrscr();
     double cost = 0;
+    printf("> Checkout\n");
     printf("Your cart:\n");
     printf("ID\tNAME\tAUTHOR\tPRICE\n");
     for (int i = 0; i < cart.size(); i++) {

@@ -43,10 +43,13 @@ int is_user_exist(char *username); // return -1 if user not found, else return l
 bool is_credential_valid(char *username, char *password);
 int get_choice(int minval, int maxval);
 
-int add_book();
-int delete_book();
+void add_book();
+void delete_book();
 int set_stock();
-int book_id_checker(char *id);
+
+int book_id_checker(char* id);
+int book_finder(char *id);
+
 int load_books();
 void write_books();
 int main()
@@ -93,7 +96,7 @@ void display_front_page()
     default:
         printf("\nError: Wrong Choice\n\n");
         system("pause");
-        main();
+        display_front_page();
     }
 }
 
@@ -265,18 +268,29 @@ void display_admin_pg()
         add_book();
         break;
     case 2:
-        // delete_book();
+        delete_book();
         break;
     case 3:
-        // set_stock();
+        set_stock();
         break;
-    case 4:
-        main();
+    case 4: 
+        display_front_page();
+
         break;
     default:
         printf("\nError: Wrong Choice\n\n");
         system("pause");
-        main();
+        display_front_page();
+    }
+}
+
+int is_user_exist(char *username) { // return -1 if user not found, else return line number of that user (starts from 1)
+    char usernameDB[20];
+    FILE *userDatabase = fopen("userDatabase.txt", "r");
+    if (userDatabase == NULL) {
+        cout << "Error accessing user database!" << endl;
+        system("pause");
+        display_front_page();
     }
 }
 
@@ -341,28 +355,28 @@ int get_choice(int minval, int maxval)
     return 0;
 }
 
-int add_book()
-{ // get new book info and push into books vector
+
+void add_book(){ // get new book info and push into books vector
+
     struct Book new_book;
     int i = 0, c = 0;
     printf("[Add Book] Enter book info: \n");
-    while (1)
-    {
-        printf("ID: ");
-        fflush(stdin);
-        while ((c = getchar()) != EOF && c != '\n')
-        {
-            new_book.id[i++] = c;
-        }
-        new_book.id[i] = 0;
-        char *nameptr = new_book.id;
-        if (book_id_checker(nameptr) != -1)
-            break;
-        else
-        {
-            printf("Id error(Redundant) please try again\n");
-            i = 0;
-        }
+  
+    while(1){
+    printf("ID: ");
+    fflush(stdin);
+    while((c = getchar()) != EOF && c!= '\n'){
+        new_book.id[i++]=c;
+    }
+    new_book.id[i] = 0;
+    char* nameptr = new_book.id;
+    if(book_id_checker(nameptr)==-1)
+        break;
+    else{
+        printf("Id error(Redundant) please try again\n");
+        i=0;
+    }
+
     }
     printf("Book name: ");
     fflush(stdin);
@@ -405,15 +419,77 @@ int add_book()
     return 0;
 }
 
-int book_id_checker(char *id)
-{
-    for (int i = 0; i < books.size(); i++)
-    {
-        if (strcmp(id, books[i].id) == 0)
-        {
-            return -1;
+int book_id_checker(char* id){
+    for(int i=0;i<books.size();i++){
+        if(strcmp(id,books[i].id)==0){
+            return i;
         }
     }
+    return -1;
+}
+
+
+int book_finder(char *id){
+    for(int i=0;i<books.size();i++){
+        if(strcmp(id,books[i].id)==0){
+            return i;
+
+        }
+    }
+    return -1;
+}
+
+void delete_book(){
+    clrscr();
+    char tmpID[30];
+    printf("[Delete Book]\n");
+    printf("Enter Book id: ");
+    fflush(stdin);
+    scanf("%s",&tmpID);
+    if(books.empty()){
+        printf("books list empty\n");
+        system("pause");
+        display_admin_pg();
+    }
+    int book_index = book_id_checker(tmpID);
+    printf("%d\n",book_index);
+    if(book_index ==-1){
+        printf("Not found\n");
+        display_admin_pg();
+    }
+    else{
+        books.erase(books.begin()+book_index);
+        printf("Deleted Book ID %s successfully\n",tmpID);
+        system("pause");
+        
+        display_admin_pg();
+
+    }
+    
+
+}
+
+int set_stock(){
+    clrscr();
+    printf("Set stock:\n");
+    printf("Enter Book id: ");
+    char tmp_id[11];
+    cin >> tmp_id;
+    int index = book_finder(tmp_id);
+    if (index == -1){
+        printf("Not found");
+        system("pause");
+        display_admin_pg();
+        return -1;
+    }
+    printf("Current stock: %d\n",books[index].stock);
+    printf("Enter stock to change: ");
+    int tmp_stock;
+    cin >> tmp_stock;
+    books[index].stock = tmp_stock;
+    clrscr();
+    printf("Book ID: %s successfully set stock\n",tmp_id);
+    display_admin_pg();
     return 0;
 }
 void clrscr()
@@ -421,12 +497,16 @@ void clrscr()
     system("cls");
 }
 
-int load_books()
-{
-    FILE *booksDatabaseR = fopen("booksDatabase.txt", "r");
+
+int load_books(){
+    FILE *booksDatabase = fopen("booksDatabase.txt","r");
+    if(booksDatabase==NULL){
+        printf("File not found");
+        return -1;
+    }
     char line[1024];
-    while (fgets(line, sizeof(line), booksDatabaseR) != NULL)
-    {
+    while(fgets(line,sizeof(line),booksDatabase)!= NULL){
+
 
         struct Book new_book;
         sscanf(line, "%s\t %[^\t] %[^\t] %d %d %d %f %d %d",
@@ -438,20 +518,19 @@ int load_books()
         books.push_back(new_book);
         // printf("id:%s\nname:%s\nauthor:%s\npubd %d pubm %d puby %d\nprice: %f\ngenre:%d\nstock %d\n",new_book.id,new_book.name,new_book.author,new_book.pub_date[0],new_book.pub_date[1],new_book.pub_date[2],new_book.price,new_book.genre,new_book.stock);
     }
-    fclose(booksDatabaseR);
+    fclose(booksDatabase);
     return 0;
 }
 
-void write_books()
-{
-    FILE *booksDatabase = fopen("booksDatabase.txt", "w+");
-    for (int i = 0; i < books.size(); i++)
-    {
+void write_books(){
+    FILE *booksDatabase = fopen("booksDatabase.txt","w");
+    for (int i = 0 ; i < books.size(); i++){
         struct Book new_book = books[i];
-        fprintf(booksDatabase, "%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\n",
-                new_book.id, new_book.name, new_book.author, new_book.pub_date[0],
-                new_book.pub_date[1], new_book.pub_date[2], new_book.price,
-                new_book.genre, new_book.stock);
+        fprintf(booksDatabase,"%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\t%d\n",
+        new_book.id,new_book.name,new_book.author,new_book.pub_date[0],
+        new_book.pub_date[1],new_book.pub_date[2],new_book.price,
+        new_book.genre,new_book.stock,new_book.number_sold);
+
     }
     fclose(booksDatabase);
 }

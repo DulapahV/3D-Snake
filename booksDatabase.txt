@@ -1,0 +1,15 @@
+00000000	Campbell Biology	Jane Reece	12	11	2014	11199.000000	0	1	1
+11111111	Thomas Calculus	George Thomas	13	3	2017	1154.250000	1	20	1
+22222222	Intro to Logic	Patrick Hurley	11	12	2011	1200.000000	2	10	1
+33333333	Surrounded by Idiots	Thomas Erikson	1	2	2014	270.000000	3	50	1
+44444444	The ANSI C	Brian Kernighan	2	3	2010	200.000000	5	25	1
+55555555	C Modern Approach	KN King	11	8	2008	500.000000	6	12	1
+66666666	Book of Proof	Richard Hammack	14	12	2020	120.000000	4	5	1
+77777777	Logic in CompSci	Michael Huth	21	2	2004	500.000000	7	60	1
+88888888	Intro to Python	Paul Deitel	11	11	2017	660.000000	8	14	1
+99999999	A Level Physics	David Sang	9	10	2017	3516.479980	9	22	1
+10101010	Schaum Calculus	Elliott Mendelson	14	11	2019	884.770020	0	100	1
+20202020	Gray Anatomy	Richard Drake	8	11	2019	2601.000000	1	18	1
+30303030	Atlas of Human Anatomy	Frank Netter	12	12	2017	2809.800049	2	20	1
+40404040	Physics for Sci and Eng	Raymond Serway	1	1	2015	4252.410156	3	66	1
+50505050	College Physics	Hugh Young	4	5	2018	3172.409912	5	22	1

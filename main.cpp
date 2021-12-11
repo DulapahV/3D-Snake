@@ -2,7 +2,7 @@
 #include <string.h>
 #include <vector>
 #include <stdlib.h>
-
+#include <iostream>
 using namespace std;
 
 #define ID_LIMIT 10
@@ -24,12 +24,11 @@ vector<Book> books;
 
 struct user{
     char id[20];
-    char password[20] = {0};
     char username[20];
-    int birthday[3]; //dd,mm,yyyy
-    
-} user;
-
+    char password[20];
+};
+ 
+// Page
 void display_front_page();
 void display_login_pg();
 void display_register_pg();
@@ -43,6 +42,7 @@ void add_book();
 void delete_book();
 int set_stock();
 int book_id_checker(char* id);
+int book_finder(char *id);
 int load_books();
 void write_books();
 int main(){
@@ -52,7 +52,6 @@ int main(){
 }
 
 void display_front_page() {
-    clrscr();
     printf(" ________  ________  ________  ___  __            ________  _________  ________  ________  _______      \n");
     printf("|\\   __  \\|\\   __  \\|\\   __  \\|\\  \\|\\  \\         |\\   ____\\|\\___   ___\\\\   __  \\|\\   __  \\|\\  ___ \\     \n");
     printf("\\ \\  \\|\\ /\\ \\  \\|\\  \\ \\  \\|\\  \\ \\  \\/  /|_       \\ \\  \\___|\\|___ \\  \\_\\ \\  \\|\\  \\ \\  \\|\\  \\ \\   __/|    \n");
@@ -149,13 +148,23 @@ void display_admin_pg(){
         delete_book();
         break;
     case 3:
-        // set_stock();
+        set_stock();
         break;
     case 4: 
         display_front_page();
         break;
     default:
         printf("\nError: Wrong Choice\n\n");
+        system("pause");
+        display_front_page();
+    }
+}
+
+int is_user_exist(char *username) { // return -1 if user not found, else return line number of that user (starts from 1)
+    char usernameDB[20];
+    FILE *userDatabase = fopen("userDatabase.txt", "r");
+    if (userDatabase == NULL) {
+        cout << "Error accessing user database!" << endl;
         system("pause");
         display_front_page();
     }
@@ -235,6 +244,16 @@ int book_id_checker(char* id){
     return -1;
 }
 
+
+int book_finder(char *id){
+    for(int i=0;i<books.size();i++){
+        if(strcmp(id,books[i].id)==0){
+            return i;
+        }
+    }
+    return -1;
+}
+
 void delete_book(){
     clrscr();
     char tmpID[30];
@@ -263,6 +282,30 @@ void delete_book(){
     }
     
 
+}
+
+int set_stock(){
+    clrscr();
+    printf("Set stock:\n");
+    printf("Enter Book id: ");
+    char tmp_id[11];
+    cin >> tmp_id;
+    int index = book_finder(tmp_id);
+    if (index == -1){
+        printf("Not found");
+        system("pause");
+        display_admin_pg();
+        return -1;
+    }
+    printf("Current stock: %d\n",books[index].stock);
+    printf("Enter stock to change: ");
+    int tmp_stock;
+    cin >> tmp_stock;
+    books[index].stock = tmp_stock;
+    clrscr();
+    printf("Book ID: %s successfully set stock\n",tmp_id);
+    display_admin_pg();
+    return 0;
 }
 void clrscr(){
     system("cls");
@@ -293,14 +336,12 @@ int load_books(){
 
 void write_books(){
     FILE *booksDatabase = fopen("booksDatabase.txt","w");
-    if(!books.empty()){
     for (int i = 0 ; i < books.size(); i++){
         struct Book new_book = books[i];
-        fprintf(booksDatabase,"%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\n",
+        fprintf(booksDatabase,"%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\t%d\n",
         new_book.id,new_book.name,new_book.author,new_book.pub_date[0],
         new_book.pub_date[1],new_book.pub_date[2],new_book.price,
-        new_book.genre,new_book.stock);
-    }
+        new_book.genre,new_book.stock,new_book.number_sold);
     }
     fclose(booksDatabase);
     }

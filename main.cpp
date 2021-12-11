@@ -25,6 +25,7 @@ struct Book
 };
 
 vector<Book> books;
+vector<Book> cart;
 
 struct User
 {
@@ -37,6 +38,7 @@ void display_front_page();
 int display_login_pg(); // return 1 if privilege is user, else 2 for admin
 void display_register_pg();
 void display_admin_pg();
+void display_customer_pg();
 
 void clrscr();
 int is_user_exist(char *username); // return -1 if user not found, else return line number of that user (starts from 1)
@@ -45,6 +47,7 @@ int get_choice(int minval, int maxval);
 
 void add_book();
 void delete_book();
+void show_book();
 int set_stock();
 
 int book_id_checker(char* id);
@@ -140,7 +143,10 @@ int display_login_pg()
             display_admin_pg();
         }
         else
-            return 1; // user page
+        {
+            system("pause");
+            display_customer_pg();
+        }
     }
     else
         cout << "\nUsername or password is incorrect! Please try again.\n"
@@ -284,14 +290,81 @@ void display_admin_pg()
     }
 }
 
-int is_user_exist(char *username) { // return -1 if user not found, else return line number of that user (starts from 1)
-    char usernameDB[20];
-    FILE *userDatabase = fopen("userDatabase.txt", "r");
+void display_customer_pg()
+{
+    clrscr();
+    printf("Customer\n");
+    printf("[1] Show Book\n");
+    printf("[2] Buy Book\n");
+    printf("[3] Checkout\n");
+    printf("[4] Exit\n");
+    printf("\nChoice--> ");
+    int choice = 0;
+    cin >> choice;
+    switch (choice)
+    {
+        case 1:
+            show_book();
+            break;
+        case 2:
+            // Buy book
+            break;
+        case 3:
+            // Checkout
+            break;
+        case 4:
+            display_front_page();
+            break;
+        default:
+        printf("\nError: Wrong Choice\n\n");
+        system("pause");
+        display_customer_pg();
+    }
+}
+
+void show_book() {
+    FILE *userDatabase = fopen("booksDatabase.txt", "r");
     if (userDatabase == NULL) {
         cout << "Error accessing user database!" << endl;
         system("pause");
         display_front_page();
     }
+    int i = 0;
+readEntry:
+    int entry = 0;
+    for (; i < books.size(); i++, entry++){
+        if (entry < 10) {
+            struct Book new_book = books[i];
+            printf("%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\t%d\n",
+            new_book.id,new_book.name,new_book.author,new_book.pub_date[0],
+            new_book.pub_date[1],new_book.pub_date[2],new_book.price,
+            new_book.genre,new_book.stock,new_book.number_sold);
+        }
+        else {
+            char choice;
+            printf("\nPress 'n' to continue to the next entry or press 'x' to exit.\n");
+            printf("\nChoice--> ");
+            cin >> choice;
+            switch (choice)
+            {
+                case 'n':
+                    clrscr();
+                    goto readEntry;
+                    break;
+                case 'x':
+                    clrscr();
+                    display_customer_pg();
+                    break;
+                default:
+                    printf("\nError: Wrong Choice\n\n");
+                    system("pause");
+                    display_customer_pg();
+            }
+        }
+    }
+    printf("End of entry!\n");
+    system("pause");
+    display_customer_pg();
 }
 
 int is_user_exist(char *username)
@@ -416,7 +489,6 @@ void add_book(){ // get new book info and push into books vector
     clrscr();
     printf("Book ID: %s successfully added\n", new_book.id);
     display_admin_pg();
-    return 0;
 }
 
 int book_id_checker(char* id){

@@ -33,6 +33,8 @@ struct User
     char password[20];
 };
 
+struct User user_info;
+
 // Page
 void display_front_page();
 int display_login_pg(); // return 1 if privilege is user, else 2 for admin
@@ -105,7 +107,6 @@ void display_front_page()
 
 int display_login_pg()
 {
-    struct User user_info;
     clrscr();
     char tempUsername[20] = {' '}, tempPassword[20] = {' '};
 
@@ -130,11 +131,8 @@ int display_login_pg()
     // Check credential
     if (is_credential_valid(tempUsername, tempPassword))
     {
-        for (int i = 0; i < 20; i++)
-        {
-            user_info.username[i] = tempUsername[i];
-            user_info.password[i] = tempPassword[i];
-        }
+        strcpy(user_info.username, tempUsername);
+        strcpy(user_info.password, tempPassword);
         cout << "\nWelcome back, " << tempUsername << "!\n"
              << endl;
         if ((strcmp(tempUsername, ADMIN_USERNAME) == 0) && (strcmp(tempPassword, ADMIN_PASSWORD) == 0))
@@ -260,7 +258,7 @@ void display_register_pg()
 void display_admin_pg()
 {
     clrscr();
-    printf("ADMIN\n");
+    printf("Logged in as: %s\n", user_info.username);
     printf("[1] Add Book\n");
     printf("[2] Delete Book\n");
     printf("[3] Manage Stock\n");
@@ -293,7 +291,7 @@ void display_admin_pg()
 void display_customer_pg()
 {
     clrscr();
-    printf("Customer\n");
+    printf("Logged in as: %s\n", user_info.username);
     printf("[1] Show Book\n");
     printf("[2] Buy Book\n");
     printf("[3] Checkout\n");
@@ -303,7 +301,7 @@ void display_customer_pg()
     cin >> choice;
     switch (choice)
     {
-        case 1:
+        case 1: 
             show_book();
             break;
         case 2:
@@ -323,15 +321,17 @@ void display_customer_pg()
 }
 
 void show_book() {
+    clrscr();
     FILE *userDatabase = fopen("booksDatabase.txt", "r");
     if (userDatabase == NULL) {
         cout << "Error accessing user database!" << endl;
         system("pause");
         display_front_page();
     }
-    int i = 0;
+    int i = 0, page = 1;
 readEntry:
     int entry = 0;
+    printf("Page %d/%d\n", page, books.size() / 10 + (books.size() % 10 != 0));
     for (; i < books.size(); i++, entry++){
         if (entry < 10) {
             struct Book new_book = books[i];
@@ -341,18 +341,17 @@ readEntry:
             new_book.genre,new_book.stock,new_book.number_sold);
         }
         else {
+            page++;
             char choice;
-            printf("\nPress 'n' to continue to the next entry or press 'x' to exit.\n");
-            printf("\nChoice--> ");
+            printf("Press 'n' to continue to next page or press 'x' to exit: ");
             cin >> choice;
             switch (choice)
             {
                 case 'n':
-                    clrscr();
+                    printf("\n");
                     goto readEntry;
                     break;
                 case 'x':
-                    clrscr();
                     display_customer_pg();
                     break;
                 default:

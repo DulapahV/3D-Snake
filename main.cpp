@@ -383,7 +383,6 @@ void buy_book() {
     }
     if (books[index].stock > 0) {
         printf("\nBook added to cart: %s\n\n",books[index].name);
-        // books[index].stock -= 1;
         cart.push_back(books[index]);
     }
     else

@@ -33,6 +33,8 @@ struct User
     char password[20];
 };
 
+struct User user_info;
+
 // Page
 void display_front_page();
 int display_login_pg(); // return 1 if privilege is user, else 2 for admin
@@ -49,6 +51,8 @@ void add_book();
 void delete_book();
 void show_book();
 int set_stock();
+void buy_book();
+void checkout();
 
 int book_id_checker(char* id);
 int book_finder(char *id);
@@ -105,7 +109,6 @@ void display_front_page()
 
 int display_login_pg()
 {
-    struct User user_info;
     clrscr();
     char tempUsername[20] = {' '}, tempPassword[20] = {' '};
 
@@ -130,11 +133,8 @@ int display_login_pg()
     // Check credential
     if (is_credential_valid(tempUsername, tempPassword))
     {
-        for (int i = 0; i < 20; i++)
-        {
-            user_info.username[i] = tempUsername[i];
-            user_info.password[i] = tempPassword[i];
-        }
+        strcpy(user_info.username, tempUsername);
+        strcpy(user_info.password, tempPassword);
         cout << "\nWelcome back, " << tempUsername << "!\n"
              << endl;
         if ((strcmp(tempUsername, ADMIN_USERNAME) == 0) && (strcmp(tempPassword, ADMIN_PASSWORD) == 0))
@@ -260,7 +260,7 @@ void display_register_pg()
 void display_admin_pg()
 {
     clrscr();
-    printf("ADMIN\n");
+    printf("Logged in as: %s\n", user_info.username);
     printf("[1] Add Book\n");
     printf("[2] Delete Book\n");
     printf("[3] Manage Stock\n");
@@ -293,7 +293,7 @@ void display_admin_pg()
 void display_customer_pg()
 {
     clrscr();
-    printf("Customer\n");
+    printf("Logged in as: %s\n", user_info.username);
     printf("[1] Show Book\n");
     printf("[2] Buy Book\n");
     printf("[3] Checkout\n");
@@ -303,14 +303,14 @@ void display_customer_pg()
     cin >> choice;
     switch (choice)
     {
-        case 1:
+        case 1: 
             show_book();
             break;
         case 2:
-            // Buy book
+            buy_book();
             break;
         case 3:
-            // Checkout
+            checkout();
             break;
         case 4:
             display_front_page();
@@ -323,36 +323,38 @@ void display_customer_pg()
 }
 
 void show_book() {
+    clrscr();
     FILE *userDatabase = fopen("booksDatabase.txt", "r");
     if (userDatabase == NULL) {
         cout << "Error accessing user database!" << endl;
         system("pause");
         display_front_page();
     }
-    int i = 0;
+    int i = 0, page = 1;
 readEntry:
     int entry = 0;
+    printf("Page %d/%d\n", page, books.size() / 10 + (books.size() % 10 != 0));
+    printf("ID\tNAME\tAUTHOR\tDATE\tMONTH\tYEAR\tPRICE\tGENRE\tSTOCK\n");
     for (; i < books.size(); i++, entry++){
         if (entry < 10) {
-            struct Book new_book = books[i];
-            printf("%s\t%s\t%s\t%d\t%d\t%d\t%f\t%d\t%d\t%d\n",
-            new_book.id,new_book.name,new_book.author,new_book.pub_date[0],
-            new_book.pub_date[1],new_book.pub_date[2],new_book.price,
-            new_book.genre,new_book.stock,new_book.number_sold);
+            struct Book book = books[i];
+            printf("%s\t%s\t%s\t%d\t%d\t%d\t%.2f\t%d\t%d\n",
+            book.id,book.name,book.author,book.pub_date[0],
+            book.pub_date[1],book.pub_date[2],book.price,
+            book.genre,book.stock);
         }
         else {
+            page++;
             char choice;
-            printf("\nPress 'n' to continue to the next entry or press 'x' to exit.\n");
-            printf("\nChoice--> ");
+            printf("Press 'n' to continue to next page or press 'x' to exit: ");
             cin >> choice;
             switch (choice)
             {
                 case 'n':
-                    clrscr();
+                    printf("\n");
                     goto readEntry;
                     break;
                 case 'x':
-                    clrscr();
                     display_customer_pg();
                     break;
                 default:
@@ -362,9 +364,68 @@ readEntry:
             }
         }
     }
-    printf("End of entry!\n");
+    printf("\n");
     system("pause");
     display_customer_pg();
+}
+
+void buy_book() {
+    clrscr();
+    printf("Enter book ID that you want to buy: ");
+    char tmp_id[11];
+    cin >> tmp_id;
+    book_finder(tmp_id);
+    int index = book_finder(tmp_id);
+    if (index == -1){
+        printf("Not found");
+        system("pause");
+        display_admin_pg();
+    }
+    if (books[index].stock > 0) {
+        printf("\nBook added to cart: %s\n\n",books[index].name);
+        cart.push_back(books[index]);
+    }
+    else
+        printf("\n%s is out of stock!\n\n",books[index].name);
+    system("pause");
+    display_customer_pg();
+}
+
+void checkout() {
+    clrscr();
+    double cost = 0;
+    printf("Your cart:\n");
+    printf("ID\tNAME\tAUTHOR\tPRICE\n");
+    for (int i = 0; i < cart.size(); i++) {
+        struct Book bookInCart = cart[i];
+        printf("%s\t%s\t%s\t%.2f",
+        bookInCart.id,bookInCart.name,bookInCart.author,bookInCart.price);
+        cost += bookInCart.price;
+    }
+    printf("\n\nTotal cost: %lf\n\n", cost);
+    printf("Would you like to confirm your order (y/n)?: ");
+    char choice;
+    cin >> choice;
+    switch (choice) {
+        case 'y':
+            for (int i = 0; i < cart.size(); i++) {
+                struct Book bookInCart = cart[i];
+                int index = book_finder(bookInCart.id);
+                books[index].stock -= 1;
+                books[index].number_sold += 1;
+            }
+            printf("\nSuccessfully checked out!\n\n");
+            system("pause");
+            display_customer_pg();
+            break;
+        case 'n':
+            display_customer_pg();
+            break;
+        default:
+            printf("\nError: Wrong Choice\n\n");
+            system("pause");
+            display_customer_pg();
+    }
 }
 
 int is_user_exist(char *username)

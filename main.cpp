@@ -49,7 +49,7 @@ int get_choice(int minval, int maxval);
 
 void add_book();
 void delete_book();
-void show_book();
+void show_book(char type); // type: user = c, admin = a
 int set_stock();
 void buy_book();
 void checkout();
@@ -261,27 +261,30 @@ void display_admin_pg()
 {
     clrscr();
     printf("Logged in as: %s\n", user_info.username);
-    printf("[1] Add Book\n");
-    printf("[2] Delete Book\n");
-    printf("[3] Manage Stock\n");
-    printf("[4] Exit\n");
+    printf("[1] Show Book\n");
+    printf("[2] Add Book\n");
+    printf("[3] Delete Book\n");
+    printf("[4] Manage Stock\n");
+    printf("[5] Exit\n");
     printf("\nChoice--> ");
     int choice = 0;
     scanf("%d", &choice);
     switch (choice)
     {
     case 1:
-        add_book();
+        show_book('a');
         break;
     case 2:
-        delete_book();
+        add_book();
         break;
     case 3:
+        delete_book();
+        break;
+    case 4:
         set_stock();
         break;
-    case 4: 
+    case 5: 
         display_front_page();
-
         break;
     default:
         printf("\nError: Wrong Choice\n\n");
@@ -305,7 +308,7 @@ void display_customer_pg()
     switch (choice)
     {
         case 1: 
-            show_book();
+            show_book('c');
             break;
         case 2:
             buy_book();
@@ -323,7 +326,7 @@ void display_customer_pg()
     }
 }
 
-void show_book() {
+void show_book(char type) { // type: user = c, admin = a
     clrscr();
     printf("> Show Book\n");
     FILE *userDatabase = fopen("booksDatabase.txt", "r");
@@ -359,18 +362,27 @@ readEntry:
                     goto readEntry;
                     break;
                 case 'x':
-                    display_customer_pg();
+                    if (type == 'c')
+                        display_customer_pg();
+                    else
+                        display_admin_pg();
                     break;
                 default:
                     printf("\nError: Wrong Choice\n\n");
                     system("pause");
-                    display_customer_pg();
+                    if (type == 'c')
+                        display_customer_pg();
+                    else
+                        display_admin_pg();
             }
         }
     }
     printf("\n");
     system("pause");
-    display_customer_pg();
+    if (type == 'c')
+        display_customer_pg();
+    else
+        display_admin_pg();
 }
 
 void buy_book() {

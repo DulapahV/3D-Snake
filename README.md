@@ -2,7 +2,9 @@
 A Project for KMITL Software Engineering, Year 1, Semester 1
 
 ## Project Description
-This project aims to make a Book store management program that runs in the terminal. The program will have:
+This project aims to make a Book store management program that runs in the terminal. 
+
+The program will have:
 
 
 main menu

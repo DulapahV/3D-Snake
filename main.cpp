@@ -90,9 +90,6 @@ void display_front_page()
     case 3:
         write_books();
         exit(0);
-    case 4: // for testing purpose
-        display_admin_pg();
-        break;
     default:
         printf("\nError: Wrong Choice\n\n");
         system("pause");

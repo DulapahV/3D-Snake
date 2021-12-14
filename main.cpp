@@ -614,7 +614,6 @@ void delete_book(){
         display_admin_pg();
     }
     int book_index = book_id_checker(tmpID);
-    printf("%d\n",book_index);
     if(book_index ==-1){
         printf("Not found\n");
         display_admin_pg();

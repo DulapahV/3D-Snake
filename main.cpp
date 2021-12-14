@@ -49,7 +49,7 @@ int get_choice(int minval, int maxval);
 
 void add_book();
 void delete_book();
-void show_book();
+void show_book(char type); // type: user = c, admin = a
 int set_stock();
 void buy_book();
 void checkout();
@@ -261,27 +261,30 @@ void display_admin_pg()
 {
     clrscr();
     printf("Logged in as: %s\n", user_info.username);
-    printf("[1] Add Book\n");
-    printf("[2] Delete Book\n");
-    printf("[3] Manage Stock\n");
-    printf("[4] Exit\n");
+    printf("[1] Show Book\n");
+    printf("[2] Add Book\n");
+    printf("[3] Delete Book\n");
+    printf("[4] Manage Stock\n");
+    printf("[5] Exit\n");
     printf("\nChoice--> ");
     int choice = 0;
     scanf("%d", &choice);
     switch (choice)
     {
     case 1:
-        add_book();
+        show_book('a');
         break;
     case 2:
-        delete_book();
+        add_book();
         break;
     case 3:
+        delete_book();
+        break;
+    case 4:
         set_stock();
         break;
-    case 4: 
+    case 5: 
         display_front_page();
-
         break;
     default:
         printf("\nError: Wrong Choice\n\n");
@@ -294,17 +297,18 @@ void display_customer_pg()
 {
     clrscr();
     printf("Logged in as: %s\n", user_info.username);
+    printf("What would you like to do today?\n");
     printf("[1] Show Book\n");
     printf("[2] Buy Book\n");
     printf("[3] Checkout\n");
-    printf("[4] Exit\n");
+    printf("[4] Logout\n");
     printf("\nChoice--> ");
     int choice = 0;
     cin >> choice;
     switch (choice)
     {
         case 1: 
-            show_book();
+            show_book('c');
             break;
         case 2:
             buy_book();
@@ -322,7 +326,7 @@ void display_customer_pg()
     }
 }
 
-void show_book() {
+void show_book(char type) { // type: user = c, admin = a
     clrscr();
     printf("> Show Book\n");
     FILE *userDatabase = fopen("booksDatabase.txt", "r");
@@ -334,12 +338,14 @@ void show_book() {
     int i = 0, page = 1;
 readEntry:
     int entry = 0;
-    printf("Page %d/%d\n", page, books.size() / 10 + (books.size() % 10 != 0));
-    printf("ID\tNAME\tAUTHOR\tDATE\tMONTH\tYEAR\tPRICE\tGENRE\tSTOCK\n");
+    printf("[Page %d/%d]\n", page, books.size() / 10 + (books.size() % 10 != 0));
+    printf("+======================================================================================================================+\n");
+    printf("   ID       |          NAME          |         AUTHOR         | DATE | MONTH |  YEAR  |   PRICE   |   GENRE   | STOCK\n");
+    printf("+======================================================================================================================+\n");
     for (; i < books.size(); i++, entry++){
         if (entry < 10) {
             struct Book book = books[i];
-            printf("%s\t%s\t%s\t%d\t%d\t%d\t%.2f\t%d\t%d\n",
+            printf("%s\t%-20s\t%-20s\t %d\t %d\t%d\t%-10.2f\t%-d\t%d\n",
             book.id,book.name,book.author,book.pub_date[0],
             book.pub_date[1],book.pub_date[2],book.price,
             book.genre,book.stock);
@@ -356,18 +362,27 @@ readEntry:
                     goto readEntry;
                     break;
                 case 'x':
-                    display_customer_pg();
+                    if (type == 'c')
+                        display_customer_pg();
+                    else
+                        display_admin_pg();
                     break;
                 default:
                     printf("\nError: Wrong Choice\n\n");
                     system("pause");
-                    display_customer_pg();
+                    if (type == 'c')
+                        display_customer_pg();
+                    else
+                        display_admin_pg();
             }
         }
     }
     printf("\n");
     system("pause");
-    display_customer_pg();
+    if (type == 'c')
+        display_customer_pg();
+    else
+        display_admin_pg();
 }
 
 void buy_book() {
@@ -398,15 +413,22 @@ void checkout() {
     double cost = 0;
     printf("> Checkout\n");
     printf("Your cart:\n");
-    printf("ID\tNAME\tAUTHOR\tPRICE\n");
+    if (cart.size() == 0) {
+        printf("\nYour cart is empty!\n\n");
+        system("pause");
+        display_customer_pg();
+    }
+    printf("+========================================================================+\n");
+    printf("   ID       |          NAME          |         AUTHOR         |   PRICE\n");
+    printf("+========================================================================+\n");
     for (int i = 0; i < cart.size(); i++) {
         struct Book bookInCart = cart[i];
-        printf("%s\t%s\t%s\t%.2f",
+        printf("%s\t%-20s\t%-20s\t%-10.2f\n",
         bookInCart.id,bookInCart.name,bookInCart.author,bookInCart.price);
         cost += bookInCart.price;
     }
-    printf("\n\nTotal cost: %lf\n\n", cost);
-    printf("Would you like to confirm your order (y/n)?: ");
+    printf("\n\nTotal cost: %.2lf\n\n", cost);
+    printf("Press 'y' to confirm purchase, 'n' to cancel, or 'c' to clear cart: ");
     char choice;
     cin >> choice;
     switch (choice) {
@@ -422,6 +444,10 @@ void checkout() {
             display_customer_pg();
             break;
         case 'n':
+            display_customer_pg();
+            break;
+        case 'c':
+            cart.clear();
             display_customer_pg();
             break;
         default:
